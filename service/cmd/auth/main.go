@@ -6,6 +6,8 @@ import (
 
 	"github.com/Ivan-Lapin/Auth-service/service/internal/config"
 	"github.com/Ivan-Lapin/Auth-service/service/internal/db"
+	"github.com/Ivan-Lapin/Auth-service/service/internal/middleware"
+	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -28,5 +30,9 @@ func main() {
 
 	config := config.LoadConfig(logger)
 
-	_, err = db.NewStorage(config.ConnToDB, logger)
+	_, err = db.NewStoragePostgre(config.ConnToDB, logger)
+
+	e := echo.New()
+
+	e.Validator = middleware.NewCustomValidator()
 }
