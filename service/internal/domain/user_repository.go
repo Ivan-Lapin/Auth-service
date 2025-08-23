@@ -1,8 +1,6 @@
 package domain
 
-import "github.com/google/uuid"
-
 type UserRepository interface {
-	Save(user *User) (uuid.UUID, error)
+	Save(user *User) error
 	FindUserByEmail(email string) (*User, error)
 }

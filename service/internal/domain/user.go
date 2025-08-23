@@ -25,10 +25,6 @@ func (u *User) SetPassword(password string) error {
 	return nil
 }
 
-func (u *User) Verify(password string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	if err != nil {
-		fmt.Errorf("failed to compare a bcrypt hashed password with its possible plaintext equivalent: %w", err)
-	}
-	return nil
+func (u *User) Verify(password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)) == nil
 }
