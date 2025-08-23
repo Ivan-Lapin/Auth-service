@@ -84,7 +84,7 @@ func (st *Storage) CreateUser(logger *zap.Logger, user User) error {
 		return fmt.Errorf("Failed to generate hash from Password: %w", err)
 	}
 
-	query := `INSERT INTO users (username, Password) VALUES $1 $2;`
+	query := `INSERT INTO users (username, password) VALUES $1 $2;`
 	_, err = st.db.Exec(query, user.Username, string(hashedPass))
 	if err != nil {
 		if err, ok := err.(*pq.Error); ok && err.Code == "23505" {
@@ -103,7 +103,7 @@ func (st *Storage) CreateUser(logger *zap.Logger, user User) error {
 func (st *Storage) GetUserByUsername(logger *zap.Logger, username string) (User, error) {
 	var user User
 
-	query := `SELECT username, Password FROM users WHERE username = $1`
+	query := `SELECT username, password FROM users WHERE username = $1`
 	err := st.db.QueryRow(query, username).Scan(&user.Username, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {

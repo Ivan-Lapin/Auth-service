@@ -5,13 +5,16 @@ import (
 	"net/http"
 
 	"github.com/Ivan-Lapin/Auth-service/service/internal/db"
+	"github.com/Ivan-Lapin/Auth-service/service/internal/service"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
-	logger  *zap.Logger
-	storage db.Storage
+	logger      *zap.Logger
+	storage     *db.Storage
+	authService service.AuthService
 }
 
 type UserRequest struct {
@@ -19,10 +22,11 @@ type UserRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
-func NewHandler(logger *zap.Logger, storage db.Storage) *Handler {
+func NewHandler(logger *zap.Logger, storage *db.Storage, authService service.AuthService) *Handler {
 	return &Handler{
-		logger:  logger,
-		storage: storage,
+		logger:      logger,
+		storage:     storage,
+		authService: authService,
 	}
 }
 
@@ -30,10 +34,10 @@ func (h *Handler) Register(c echo.Context) error {
 	var ureq UserRequest
 
 	if err := c.Bind(&ureq); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
 	}
 
-	if err := c.Validate(ureq); err != nil {
+	if err := c.Validate(&ureq); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Validation failed"})
 	}
 
@@ -49,7 +53,7 @@ func (h *Handler) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, nil)
 }
 
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Login(c echo.Context) (*jwt.Token, error) {
 
 }
 
