@@ -1,9 +1,9 @@
 package web
 
 import (
+	"net/http"
 	"time"
 
-	"github.com/Ivan-Lapin//Auth-service/service/internal/interfaces/http"
 	"github.com/Ivan-Lapin/Auth-service/service/internal/application"
 	"github.com/Ivan-Lapin/Auth-service/service/internal/config"
 	"go.uber.org/zap"
@@ -12,7 +12,8 @@ import (
 func NewServer(cfg *config.Config, logger *zap.Logger, usertSrv *application.UserService, authSrv *application.AuthService) *http.Server {
 	mux := http.NewServeMux()
 
-	mux.Handle("POST api/register", http.RegisterHandler(logger, usertSrv))
+	mux.Handle("POST api/register", RegisterHandler(logger, usertSrv))
+	mux.Handle("POST api/login", LoginHandler(logger, authSrv))
 
 	return &http.Server{
 		Addr:         cfg.Server.HTTPport,

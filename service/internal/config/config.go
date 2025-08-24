@@ -15,7 +15,8 @@ type Config struct {
 		HTTPport string
 	}
 	DB struct {
-		ConnToDB string
+		ConnToDB       string
+		MigrationsPath string
 	}
 	JWT struct {
 		JWTSecretKey string
@@ -27,7 +28,7 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	configpath := os.Getenv("CONFIG_PATH")
+	configpath := os.Getenv("CONFIG_PATH_AUTH_SERVICE")
 
 	viper.SetConfigFile(configpath)
 
