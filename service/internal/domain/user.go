@@ -2,16 +2,19 @@ package domain
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID       uuid.UUID `json:"id"`
-	Username string    `json:"username"`
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
+	ID        uuid.UUID `json:"id" db:"id"`
+	Username  string    `json:"username" db:"name"`
+	Email     string    `json:"email" db:"email"`
+	Password  string    `json:"password" db:"password_hash"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (u *User) SetPassword(password string) error {

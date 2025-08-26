@@ -12,18 +12,18 @@ import (
 
 type Config struct {
 	Server struct {
-		HTTPport string
+		HTTPPort string `mapstructure:"httpPort"`
 	}
 	DB struct {
-		ConnToDB       string
-		MigrationsPath string
+		ConnToDB       string `mapstructure:"connectToDB"`
+		MigrationsPath string `mapstructure:"migrationsPath"`
 	}
 	JWT struct {
-		JWTSecretKey string
+		JWTSecretKey string `mapstructure:"secret"`
 	}
 	Logging struct {
-		Level       string
-		Development bool
+		Level       string `mapstructure:"level"`
+		Development bool   `mapstructure:"development"`
 	}
 }
 
@@ -41,7 +41,7 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal the config into the struct: %w", err)
 	}
 
-	log.Println("Load file configuration", zap.Any("Config", cfg))
+	log.Printf("Load file configuration: %+v", zap.Any("Config", cfg))
 
 	return &cfg, nil
 }
@@ -55,6 +55,8 @@ func NewLogger(cfg *Config) (*zap.Logger, error) {
 		ErrorOutputPaths: []string{"stderr"},
 		EncoderConfig:    zap.NewDevelopmentEncoderConfig(),
 	}
+
+	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
 
 	return config.Build()
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"go.uber.org/zap"
 )
@@ -22,8 +23,11 @@ func JSONError(w http.ResponseWriter, status int, publicMsg string, logger *zap.
 }
 
 func ReadBody(w http.ResponseWriter, r *http.Request, encoded_data interface{}, logger *zap.Logger) error {
-	if w.Header().Get("Content-Type") != "application/json" {
+	ct := r.Header.Get("Content-Type")
+	if ct == "" || !strings.HasPrefix(ct, "application/json") {
 		JSONError(w, http.StatusUnsupportedMediaType, "Content-Type must be application/json", logger)
+		fmt.Println("Header", w.Header())
+		fmt.Println("Content-Type", w.Header()["Content-Type"])
 		return errors.New("ivalid Content-Type")
 	}
 

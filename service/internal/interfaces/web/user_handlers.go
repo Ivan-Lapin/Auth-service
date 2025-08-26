@@ -2,12 +2,19 @@ package web
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/Ivan-Lapin/Auth-service/service/internal/apperrors"
 	"github.com/Ivan-Lapin/Auth-service/service/internal/application"
 	"go.uber.org/zap"
 )
+
+func MainPage(logger *zap.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Testing Hello...")
+	}
+}
 
 func RegisterHandler(logger *zap.Logger, userSrvc *application.UserService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

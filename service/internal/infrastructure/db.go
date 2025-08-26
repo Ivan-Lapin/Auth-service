@@ -6,6 +6,8 @@ import (
 	"github.com/Ivan-Lapin/Auth-service/service/internal/config"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -27,6 +29,11 @@ func RunMigrations(db *sqlx.DB, migrationsPath string, logger *zap.Logger) error
 	if err != nil {
 		logger.Error("Failed to create postgres driver", zap.Error(err))
 		return fmt.Errorf("failed to create postgres driver: %w", err)
+	}
+
+	if err != nil {
+		logger.Error("Failed to return an absolute representation of path", zap.Error(err))
+		return fmt.Errorf("failed to return an absolute representation of path: %w", err)
 	}
 
 	migrator, err := migrate.NewWithDatabaseInstance("file://"+migrationsPath, "postgres", driver)

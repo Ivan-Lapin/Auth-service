@@ -6,16 +6,17 @@ import (
 
 	"github.com/Ivan-Lapin/Auth-service/service/internal/apperrors"
 	"github.com/Ivan-Lapin/Auth-service/service/internal/domain"
+	"github.com/Ivan-Lapin/Auth-service/service/internal/infrastructure"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
 type UserService struct {
-	userRepo domain.UserRepository
+	userRepo infrastructure.UserRepository
 	logger   *zap.Logger
 }
 
-func NewUserService(ur domain.UserRepository, loggerr *zap.Logger) *UserService {
+func NewUserService(ur infrastructure.UserRepository, loggerr *zap.Logger) *UserService {
 	return &UserService{
 		userRepo: ur, logger: loggerr,
 	}

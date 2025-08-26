@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("Failed to connect to database", zap.Error(err))
 	}
+	defer db.Close()
 
 	err = infrastructure.RunMigrations(db, cfg.DB.MigrationsPath, logger)
 	if err != nil {
@@ -42,7 +43,7 @@ func main() {
 
 	server := web.NewServer(cfg, logger, userService, authService)
 
-	logger.Info("Starting server...", zap.String("port", cfg.Server.HTTPport))
+	logger.Info("Starting server...", zap.String("port", cfg.Server.HTTPPort))
 	if err = server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logger.Fatal("Server failed", zap.Error(err))
 	}

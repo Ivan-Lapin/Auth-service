@@ -5,18 +5,18 @@ import (
 	"fmt"
 
 	"github.com/Ivan-Lapin/Auth-service/service/internal/apperrors"
-	"github.com/Ivan-Lapin/Auth-service/service/internal/domain"
+	"github.com/Ivan-Lapin/Auth-service/service/internal/infrastructure"
 	"github.com/Ivan-Lapin/Auth-service/service/pkg/jwt"
 	"go.uber.org/zap"
 )
 
 type AuthService struct {
-	userRepo domain.UserRepository
+	userRepo infrastructure.UserRepository
 	jwt      *jwt.JWT
 	logger   *zap.Logger
 }
 
-func NewAuthService(userRepo domain.UserRepository, jwt *jwt.JWT, logger *zap.Logger) *AuthService {
+func NewAuthService(userRepo infrastructure.UserRepository, jwt *jwt.JWT, logger *zap.Logger) *AuthService {
 	return &AuthService{userRepo: userRepo, jwt: jwt, logger: logger}
 }
 
