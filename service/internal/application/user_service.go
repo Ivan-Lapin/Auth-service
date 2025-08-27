@@ -32,7 +32,7 @@ func (us *UserService) Register(name, email, password string) (*domain.User, err
 		Email:    email,
 	}
 
-	if err := user.SetPassword(email); err != nil {
+	if err := user.SetPassword(password); err != nil {
 		us.logger.Error("Failed to set password for user", zap.String("Username", user.Username), zap.String("Email", user.Email), zap.Error(err))
 		return nil, fmt.Errorf("failed to set password for user: %w", err)
 	}
@@ -44,7 +44,7 @@ func (us *UserService) Register(name, email, password string) (*domain.User, err
 	}
 
 	if err != nil {
-		us.logger.Error("Failed to save user into DB", zap.String("Username", user.Username), zap.String("Email", user.Email))
+		us.logger.Error("Failed to save user into DB", zap.String("Username", user.Username), zap.String("Email", user.Email), zap.Error(err))
 		return nil, fmt.Errorf("failed to save user into DB: %w", err)
 	}
 
