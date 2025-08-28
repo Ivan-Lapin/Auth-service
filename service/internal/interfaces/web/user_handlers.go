@@ -16,19 +16,24 @@ func MainPage(logger *zap.Logger) http.HandlerFunc {
 	}
 }
 
-func RegisterHandler(logger *zap.Logger, userSrvc *application.UserService) http.HandlerFunc {
+func RegisterHandler(logger *zap.Logger, userSrvc application.UserActions) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req struct {
-			name     string `json:"name"`
-			email    string `json:"email"`
-			password string `json:"password"`
+			Name     string `json:"name"`
+			Email    string `json:"email"`
+			Password string `json:"password"`
 		}
 
 		if err := ReadBody(w, r, &req, logger); err != nil {
 			return
 		}
 
-		user, err := userSrvc.Register(req.name, req.email, req.password)
+		if req.Name == "" || req.Email == "" || req.Password == "" {
+			JSONError(w, http.StatusBadRequest, "Ivalid data request", logger)
+			return
+		}
+
+		user, err := userSrvc.Register(req.Name, req.Email, req.Password)
 		if err != nil {
 			if errors.Is(err, apperrors.ErrUserAlreadyExist) {
 				JSONError(w, http.StatusConflict, "Email already exist", logger)

@@ -10,6 +10,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type AuthActions interface {
+	Login(email, password string) (string, error)
+}
+
 type AuthService struct {
 	userRepo infrastructure.UserRepository
 	jwt      *jwt.JWT
@@ -36,7 +40,7 @@ func (as *AuthService) Login(email, password string) (string, error) {
 
 	if !user.Verify(password) {
 		as.logger.Info("Invalid password", zap.String("Email", email))
-		return "", apperrors.ErrIvalidPassword
+		return "", apperrors.ErrInvalidPassword
 	}
 
 	token, err := as.jwt.Generate(user.ID)

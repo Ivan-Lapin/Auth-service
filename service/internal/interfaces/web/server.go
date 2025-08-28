@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewServer(cfg *config.Config, logger *zap.Logger, usertSrv *application.UserService, authSrv *application.AuthService) *http.Server {
+func NewServer(cfg *config.Config, logger *zap.Logger, usertSrv application.UserActions, authSrv *application.AuthService) *http.Server {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/test", MainPage(logger))

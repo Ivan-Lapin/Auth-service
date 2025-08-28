@@ -11,6 +11,10 @@ import (
 	"go.uber.org/zap"
 )
 
+type UserActions interface {
+	Register(name, email, password string) (*domain.User, error)
+}
+
 type UserService struct {
 	userRepo infrastructure.UserRepository
 	logger   *zap.Logger
