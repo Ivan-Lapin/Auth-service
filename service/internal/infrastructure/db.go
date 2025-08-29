@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/Ivan-Lapin/Auth-service/service/internal/config"
 	"github.com/golang-migrate/migrate/v4"
@@ -31,9 +32,9 @@ func RunMigrations(db *sqlx.DB, migrationsPath string, logger *zap.Logger) error
 		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}
 
-	if err != nil {
-		logger.Error("Failed to return an absolute representation of path", zap.Error(err))
-		return fmt.Errorf("failed to return an absolute representation of path: %w", err)
+	envPath := os.Getenv("MIGRATIONS_PATH_AUTH_SERVICE")
+	if envPath != "" {
+		migrationsPath = envPath
 	}
 
 	migrator, err := migrate.NewWithDatabaseInstance("file://"+migrationsPath, "postgres", driver)

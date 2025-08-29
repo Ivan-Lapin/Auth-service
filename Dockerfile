@@ -1,22 +1,23 @@
-FROM golang:latest AS builder
+FROM golang:1.24.5 AS builder
 
 WORKDIR /app
 
-COPY go.mode go sum ./
+COPY go.mod go.sum ./
 
 RUN go mod download
 
 COPY . .
 
-RUN go biuld -o auth-service /service/cmd/auth
+RUN go build -o auth_service ./service/cmd/auth/main.go
 
-FROM golang:latest
+FROM golang:1.24.5
 
-COPY --from=builder /app/service .
+WORKDIR /root/
 
-COPY ./service/internal/config/config.yaml ./service/internal/config/config.yaml
+COPY --from=builder /app/auth_service .
 
-EXPOSE 8878
+COPY /service/migrations /root/migrations
 
-ENTRYPOINT [ "./auth-service" ]
+EXPOSE 8877
 
+CMD [ "./auth_service" ]
