@@ -2,37 +2,50 @@ package main
 
 import (
 	"log"
-	"time"
+	"net/http"
 
+	"github.com/Ivan-Lapin/Auth-service/service/internal/application"
 	"github.com/Ivan-Lapin/Auth-service/service/internal/config"
-	"github.com/Ivan-Lapin/Auth-service/service/internal/db"
-	"github.com/Ivan-Lapin/Auth-service/service/internal/middleware"
-	"github.com/labstack/echo/v4"
+	"github.com/Ivan-Lapin/Auth-service/service/internal/infrastructure"
+	"github.com/Ivan-Lapin/Auth-service/service/internal/interfaces/web"
+	"github.com/Ivan-Lapin/Auth-service/service/pkg/jwt"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func main() {
-	cfg := zap.NewDevelopmentConfig()
-
-	// Устанавливаем TimeKey, чтобы включить временную метку
-	cfg.EncoderConfig.TimeKey = "time" // Ключ для временной метки
-	cfg.EncoderConfig.EncodeTime = func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-		enc.AppendString(t.Format("02.01.2006. 15:04:05"))
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("Failed to Load Config", err)
 	}
 
-	logger, err := cfg.Build()
+	logger, err := config.NewLogger(cfg)
 	if err != nil {
-		log.Fatal("failed to build constructs a logger from the config and options: %w", err)
+		log.Fatal("Failed to Create Logger", err)
 	}
 
 	defer logger.Sync()
 
-	config := config.LoadConfig(logger)
+	db, err := infrastructure.NewDB(cfg, logger)
+	if err != nil {
+		logger.Fatal("Failed to connect to database", zap.Error(err))
+	}
+	defer db.Close()
 
-	_, err = db.NewStoragePostgre(config.ConnToDB, logger)
+	err = infrastructure.RunMigrations(db, cfg.DB.MigrationsPath, logger)
+	if err != nil {
+		logger.Fatal("Failed to run migrations", zap.Error(err))
+	}
 
-	e := echo.New()
+	userRepo := infrastructure.NewUserRepository(db, logger)
+	userService := application.NewUserService(userRepo, logger)
+	JSONWebToken := jwt.NewJWT([]byte(cfg.JWT.JWTSecretKey), logger)
+	authService := application.NewAuthService(userRepo, JSONWebToken, logger)
 
-	e.Validator = middleware.NewCustomValidator()
+	server := web.NewServer(cfg, logger, userService, authService)
+
+	logger.Info("Starting server...", zap.String("port", cfg.Server.HTTPPort))
+	if err = server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		logger.Fatal("Server failed", zap.Error(err))
+	}
+
 }

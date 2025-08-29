@@ -1,3 +1,13 @@
-connectToDB: "host=147.45.165.193 port=5432 user=currency_p1n41k password=qwerty1 dbname=currency_db sslmode=disable"
-httpPort: "8878"
-grpcPort: "8877"
+server:
+  httpPort: ":8877"
+  
+db:
+  connectToDB: "host=147.45.165.193 port=5432 user=currency_p1n41k password=qwerty1 dbname=postgres sslmode=disable"
+  migrationsPath: "../../migrations"
+
+jwt:
+  secret: "auth-secret-key"
+
+logging:
+  level: "info"
+  development: true

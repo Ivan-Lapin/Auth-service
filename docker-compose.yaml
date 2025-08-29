@@ -1,1 +1,15 @@
 version: '3.8'
+
+services:
+  auth_service:
+    image: auth_service-image
+    container_name: auth_service
+    ports:
+    - "8887:8877"
+    environment:
+      - MIGRATIONS_PATH_AUTH_SERVICE=/root/migrations
+      - CONFIG_PATH_AUTH_SERVICE=/root/config.yaml
+    volumes:
+    - /Users/pinchik/Desktop/Auth-service/service/internal/config/config.yaml:/root/config.yaml:ro
+    command: ["./auth_service"]
+    restart: unless-stopped
