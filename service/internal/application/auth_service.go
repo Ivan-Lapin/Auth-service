@@ -49,7 +49,7 @@ func (as *AuthService) Login(email, password string) (string, error) {
 		return "", fmt.Errorf("failed to generate token: %w", err)
 	}
 
-	as.logger.Info("Successfil user loging", zap.String("Email", email))
+	as.logger.Info("Successful user loging", zap.String("Email", email))
 
 	return token, nil
 

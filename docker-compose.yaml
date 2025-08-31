@@ -4,8 +4,11 @@ services:
   auth_service:
     image: auth_service-image
     container_name: auth_service
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-    - "8887:8877"
+    - "8877:8877"
     environment:
       - MIGRATIONS_PATH_AUTH_SERVICE=/root/migrations
       - CONFIG_PATH_AUTH_SERVICE=/root/config.yaml
