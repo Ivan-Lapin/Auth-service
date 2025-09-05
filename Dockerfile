@@ -16,6 +16,8 @@ WORKDIR /root/
 
 COPY --from=builder /app/auth_service .
 
+COPY ./service/internal/config/config.yaml ./service/internal/config/config.yaml
+
 COPY /service/migrations /root/migrations
 
 EXPOSE 8877
