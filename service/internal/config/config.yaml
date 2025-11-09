@@ -1,0 +1,13 @@
+server:
+  httpPort: ":8877"
+  
+db:
+  connectToDB: "host=db port=5432 user=pinchik password=qwerty1 dbname=postgres sslmode=disable"
+  migrationsPath: "../../migrations"
+
+jwt:
+  secret: "secret-key"
+
+logging:
+  level: "info"
+  development: true
